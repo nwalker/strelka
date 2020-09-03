@@ -2,6 +2,14 @@
 defmodule Strelka do
   alias Strelka.{Impl, SimpleRouter}
 
+  defmodule Match do
+    defstruct [:template, :data, :result, :path_params, :path]
+  end
+
+  defmodule PartialMatch do
+    defstruct [:template, :data, :result, :path_params, :path, :required]
+  end
+
   defprotocol Router do
     def name(router)
     def options(router)
