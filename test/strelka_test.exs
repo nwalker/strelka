@@ -36,27 +36,36 @@ defmodule StrelkaTest do
     ) == S.match_name(r, :beer, size: "large")
   end
 
-  # test "simple2" do
-  #   r = S.router([
-  #     ["/items", %{test: true},
-  #       ["", %{test: false, name: :list}],
-  #       ["/:id", :item]],
-  #     ["/items/:id/:side", :deep],
-  #   ])
-  #   assert [
-  #     {"/items", %{name: :list, test: false}},
-  #     {"/items/:id", %{name: :item, test: true}},
-  #     {"/items/:id/:side", %{name: :deep}},
-  #   ] = S.routes(r)
-  #   assert [:list, :item, :deep] = S.route_names(r)
+  test "simple2" do
+    r = S.router([
+      ["/items", %{test: true},
+        ["", %{test: false, name: :list}],
+        ["/:id", :item]],
+      ["/items/:id/:side", :deep],
+    ])
+    assert [
+      {"/items", %{name: :list, test: false}},
+      {"/items/:id", %{name: :item, test: true}},
+      {"/items/:id/:side", %{name: :deep}},
+    ] = S.routes(r)
+    assert [:list, :item, :deep] = S.route_names(r)
 
-  #   assert struct(S.PartialMatch,
-  #     template: "/items/:id/:side",
-  #     data: %{name: :deep},
-  #     path_params: %{id: 1},
-  #     required: MapSet.new([:side])
-  #   ) == S.match_name(r, :deep, id: 1)
-  # end
+    assert struct(S.PartialMatch,
+      template: "/items/:id/:side",
+      data: %{name: :deep},
+      path_params: %{id: 1},
+      required: MapSet.new([:side])
+    ) == S.match_name(r, :deep, id: 1)
+
+    assert struct(S.Match,
+      template: "/items/:id/:side",
+      data: %{name: :deep},
+      path: "/items/12700/left",
+      path_params: %{id: "12700", side: "left"},
+    ) == S.match_path(r, "/items/12700/left")
+
+    assert nil == S.match_path(r, "INVALID")
+  end
 
   test "complex" do
     r = S.router([
